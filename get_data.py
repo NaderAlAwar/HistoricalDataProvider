@@ -9,7 +9,6 @@ def get_data(stock_ticker):
     result = []
     for record in stock_record:
         result.append(record.to_dict())
-        print(record.to_dict())
     if len(stock_record) == 0:
         end_date = datetime.now()
         start_date = datetime(end_date.year - 5, end_date.month, end_date.day)
