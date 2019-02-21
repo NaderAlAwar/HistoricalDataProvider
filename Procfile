@@ -1,1 +1,1 @@
-web: flask db upgrade; gunicorn historical-data-provider:app
+web: flask db upgrade; gunicorn HistoricalDataProvider:app
