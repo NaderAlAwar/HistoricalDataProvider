@@ -34,7 +34,7 @@ lxml==4.2.5
 Mako==1.0.7
 MarkupSafe==1.0
 #mkl-fft==1.0.6
-mkl-random==1.0.1
+#mkl-random==1.0.1
 multipledispatch==0.6.0
 networkx==1.11
 numexpr==2.6.1
