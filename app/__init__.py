@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import create_engine
 import logging
+import os
+from logging.handlers import RotatingFileHandler
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -13,6 +15,9 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
     db.init_app(app)
     migrate.init_app(app, db)
+
+    from app.main import bp as main_bp
+    app.register_blueprint(main_bp)
 
     if not app.debug and not app.testing:
         if app.config['LOG_TO_STDOUT']:
@@ -35,4 +40,4 @@ def create_app(config_class=Config):
     return app
 
 
-from app import routes, models
+from app import models
