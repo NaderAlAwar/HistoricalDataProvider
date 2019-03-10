@@ -7,11 +7,16 @@ def get_statistics(portfolio):
 
     for key, value in portfolio.items():
         stock_prices[key] = get_data(key)
-
-    df = dict_to_dataframe(stock_prices)
-    print(df)
     
-    return stock_prices
+    df = dict_to_dataframe(stock_prices)
+    df.dropna(inplace=True)
+
+    for column in df:
+        df[column] = df[column].apply(lambda x: x * portfolio[column]) # multiply each column by the number of stocks bought to get total price
+    df['total'] = df.sum(axis=1)
+    df.drop(list(portfolio), axis=1, inplace=True)
+    df = df.diff()
+    return df.to_json(orient='index')
 
 def dict_to_dataframe(stock_prices_dict): # takes in a dictionary of stock prices and returns a dataframe
     list_of_earliest_dates = []
@@ -35,8 +40,4 @@ def dict_to_dataframe(stock_prices_dict): # takes in a dictionary of stock price
                 continue
             df.at[current_date, key] = stock_quote['close_price']
     
-    print(df)            
-
-
-# def get_earliest_date(stock_prices): # gets the earliest available date of the historical prices
-#     for key,value in stock_prices.items():
+    return df            
