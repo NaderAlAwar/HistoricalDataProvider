@@ -9,14 +9,26 @@ def get_statistics(portfolio):
         stock_prices[key] = get_data(key)
     
     df = dict_to_dataframe(stock_prices)
+    df = compute_statistics(df, portfolio)
+
+    return df.to_json(orient='index')
+
+def compute_statistics(prices_over_time, portfolio):
+    df = prices_over_time
     df.dropna(inplace=True)
 
     for column in df:
         df[column] = df[column].apply(lambda x: x * portfolio[column]) # multiply each column by the number of stocks bought to get total price
-    df['total'] = df.sum(axis=1)
-    df.drop(list(portfolio), axis=1, inplace=True)
-    df = df.diff()
-    return df.to_json(orient='index')
+    
+    stocks_list = list(df)
+    df['total_value'] = df.sum(axis=1)
+    df.drop(stocks_list, axis=1, inplace=True)
+    df['daily_returns'] = df.diff()
+    df['moving_average'] = float('nan')
+    df['moving_standard_deviation'] = float('nan')
+    df['moving_average'] = df.rolling(window=50).mean()
+    df['moving_standard_deviation'] = df.rolling(window=50).std()
+    return df
 
 def dict_to_dataframe(stock_prices_dict): # takes in a dictionary of stock prices and returns a dataframe
     list_of_earliest_dates = []
