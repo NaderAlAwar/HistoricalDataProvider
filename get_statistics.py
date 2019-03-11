@@ -1,7 +1,7 @@
 import pandas as pd
 from get_data import get_data
 
-def get_statistics(portfolio):
+def prepare_dataframe(portfolio):
     # portfolio is a dict mapping stocks to weights
     stock_prices = {}
 
@@ -9,25 +9,42 @@ def get_statistics(portfolio):
         stock_prices[key] = get_data(key)
     
     df = dict_to_dataframe(stock_prices)
-    df = compute_statistics(df, portfolio)
-
-    return df.to_json(orient='index')
-
-def compute_statistics(prices_over_time, portfolio):
-    df = prices_over_time
     df.dropna(inplace=True)
+    df = compute_total_value(df, portfolio)
 
+    return df
+
+def compute_total_value(prices_over_time, portfolio):
+    df = prices_over_time
     for column in df:
         df[column] = df[column].apply(lambda x: x * portfolio[column]) # multiply each column by the number of stocks bought to get total price
-    
     stocks_list = list(df)
     df['total_value'] = df.sum(axis=1)
     df.drop(stocks_list, axis=1, inplace=True)
+    return df
+
+def compute_daily_returns(prices_over_time):
+    df = prices_over_time
     df['daily_returns'] = df.diff()
+    return df
+
+def compute_moving_average(prices_over_time, window):
+    df = prices_over_time
     df['moving_average'] = float('nan')
+    df['moving_average'] = df.rolling(window=window).mean()
+    return df
+
+def compute_moving_standard_deviation(prices_over_time, window):
+    df = prices_over_time
     df['moving_standard_deviation'] = float('nan')
-    df['moving_average'] = df.rolling(window=50).mean()
-    df['moving_standard_deviation'] = df.rolling(window=50).std()
+    df['moving_standard_deviation'] = df.rolling(window=window).std()
+    return df
+
+def compute_statistics(prices_over_time):
+    df = prices_over_time
+    df = compute_daily_returns(df)
+    df = compute_moving_average(df, 50)
+    df = compute_moving_standard_deviation(df, 50)
     return df
 
 def dict_to_dataframe(stock_prices_dict): # takes in a dictionary of stock prices and returns a dataframe
