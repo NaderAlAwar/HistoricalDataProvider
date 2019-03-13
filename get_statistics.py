@@ -7,11 +7,9 @@ def prepare_dataframe(portfolio):
 
     for key, value in portfolio.items():
         stock_prices[key] = get_data(key)
-    
     df = dict_to_dataframe(stock_prices)
     df.dropna(inplace=True)
     df = compute_total_value(df, portfolio)
-
     return df
 
 def compute_total_value(prices_over_time, portfolio):
