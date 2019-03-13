@@ -19,6 +19,9 @@ def create_app(config_class=Config):
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
 
+    from app.backtesting import bp as backtesting_bp
+    app.register_blueprint(backtesting_bp)
+
     if not app.debug and not app.testing:
         if app.config['LOG_TO_STDOUT']:
             stream_handler = logging.StreamHandler()

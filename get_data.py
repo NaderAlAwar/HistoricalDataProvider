@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from iexfinance.stocks import get_historical_data
-from flask import jsonify
 from app.models import StockDailyPrice
 from app import db
 
@@ -19,4 +18,4 @@ def get_data(stock_ticker):
             result.append(daily_price.to_dict())
             db.session.add(daily_price)
         db.session.commit()
-    return jsonify(result)
+    return result

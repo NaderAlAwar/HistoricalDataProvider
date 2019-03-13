@@ -1,6 +1,7 @@
 from app.main import bp
 from flask import request
 from get_data import get_data
+from flask import jsonify
 
 @bp.route("/")
 def hello():
@@ -9,4 +10,4 @@ def hello():
 @bp.route("/api/data", methods=['GET'])
 def get_stock_ticker_data():
     stock_ticker = request.args.get('ticker')
-    return get_data(stock_ticker)
+    return jsonify(get_data(stock_ticker))
