@@ -31,6 +31,7 @@ class StockTickerInfo(db.Model):
     data_present = db.Column(db.Boolean, index=True)
     oldest_date = db.Column(db.DateTime)
     newest_date = db.Column(db.DateTime)
+    number_of_entries = db.Column(db.Integer)
 
     def to_dict(self):
         data = {
@@ -38,6 +39,7 @@ class StockTickerInfo(db.Model):
             'last_accessed': self.last_accessed,
             'data_present': self.data_present,
             'oldest_date': self.oldest_date,
-            'newest_date': self.newest_date
+            'newest_date': self.newest_date,
+            'number_of_entries': self.number_of_entries
         }
         return data

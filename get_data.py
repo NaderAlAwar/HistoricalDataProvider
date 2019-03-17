@@ -26,6 +26,7 @@ def get_data(stock_ticker):
                 stock_record.append(daily_price.to_dict())
                 db.session.add(daily_price)
             data_status.newest_date = current_date
+            data_status.number_of_entries = data_status.number_of_entries + len(latest_data)
             db.session.commit()
         return stock_record
     else:
@@ -39,27 +40,10 @@ def get_data(stock_ticker):
             daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, close_price=value['close'], open_price=value['open'], lowest_price=value['low'], volume=value['volume'], highest_price=value['high'])
             stock_record.append(daily_price.to_dict())
             db.session.add(daily_price)
+        stock_ticker_data_status.number_of_entries = len(stock_data)
         db.session.add(stock_ticker_data_status)
         db.session.commit()
         return stock_record
-
-
-        
-
-    # result = []
-    # # for record in stock_record:
-    # #     result.append(record.to_dict())
-    # # if len(stock_record) == 0:
-    # #     end_date = datetime.now()
-    # #     start_date = datetime(end_date.year - 5, end_date.month, end_date.day)
-    # #     stock_record = get_historical_data(stock_ticker, start_date, end_date)
-    # #     for key, value in stock_record.items():
-    # #         datetime_object = datetime.strptime(key, '%Y-%m-%d')
-    # #         daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, close_price=value['close'], open_price=value['open'], lowest_price=value['low'], volume=value['volume'], highest_price=value['high'])
-    # #         result.append(daily_price.to_dict())
-    # #         db.session.add(daily_price)
-    # #     db.session.commit()
-    # return result
 
 def check_data_status(stock_ticker):
     try:
