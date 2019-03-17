@@ -1,0 +1,330 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Welcome to HistoricalDataProvider’s documentation! &#8212; HistoricalDataProvider 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-historicaldataprovider-s-documentation">
+<h1>Welcome to HistoricalDataProvider’s documentation!<a class="headerlink" href="#welcome-to-historicaldataprovider-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="historicaldata-controller">
+<h1>HistoricalData controller<a class="headerlink" href="#historicaldata-controller" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-app.main.routes"></span><span class="target" id="module-main"></span><dl class="function">
+<dt id="app.main.routes.get_stock_ticker_data">
+<code class="descclassname">app.main.routes.</code><code class="descname">get_stock_ticker_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/main/routes.html#get_stock_ticker_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.main.routes.get_stock_ticker_data" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Get the historical data</strong></p>
+<p>This function allows the user to get the historical data of a stock from five years ago</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ticker</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – ticker of the stock</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">json of historical data</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p class="first">Example</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>GET http://127.0.0.1:5000/api/data?ticker=GOOG
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div><ul>
+<li><p class="first">Expected Success Response:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;close_price&quot;</span><span class="p">:</span><span class="mf">558.46</span><span class="p">,</span>
+        <span class="s2">&quot;date&quot;</span><span class="p">:</span><span class="s2">&quot;Thu, 27 Mar 2014 00:00:00 GMT&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;highest_price&quot;</span><span class="p">:</span><span class="mf">568.0</span><span class="p">,</span>
+        <span class="s2">&quot;lowest_price&quot;</span><span class="p">:</span><span class="mf">552.92</span><span class="p">,</span>
+        <span class="s2">&quot;open_price&quot;</span><span class="p">:</span><span class="mf">568.0</span><span class="p">,</span>
+        <span class="s2">&quot;stock_ticker&quot;</span><span class="p">:</span><span class="s2">&quot;GOOG&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;volume&quot;</span><span class="p">:</span><span class="mf">13052.0</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+
+    <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<div class="section" id="backtesting-controller">
+<h1>BackTesting controller<a class="headerlink" href="#backtesting-controller" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-app.backtesting.routes"></span><span class="target" id="module-BackTesting"></span><dl class="function">
+<dt id="app.backtesting.routes.get_daily_returns">
+<code class="descclassname">app.backtesting.routes.</code><code class="descname">get_daily_returns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/backtesting/routes.html#get_daily_returns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.backtesting.routes.get_daily_returns" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Gets all the daily returns of a portfolio.</strong>
+This function allows user to get the daily returns of a portfolio when backtested on historical data. The first entry for
+daily_returns is null.
+:return: results of the backtest
+- Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>POST http://127.0.0.1:5000/api/daily_returns?window=50
+&#39;{
+    &quot;AAPL&quot;: 2,
+    &quot;TSLA&quot;: &quot;7&quot;
+}&#39;
+</pre></div>
+</div>
+<ul>
+<li><dl class="first docutils">
+<dt>Expected Success Response::</dt>
+<dd><dl class="first docutils">
+<dt>{</dt>
+<dd><p class="first">“1403481600000”:
+{</p>
+<blockquote>
+<div><p>“total_value”:1827.6768,
+“daily_returns”:53.2628,</p>
+</div></blockquote>
+<p>},
+“1403568000000”:
+{</p>
+<blockquote>
+<div><p>“total_value”:1793.6248,
+“daily_returns”:-34.052,</p>
+</div></blockquote>
+<p class="last">},</p>
+</dd>
+</dl>
+<p class="last">}</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.backtesting.routes.get_moving_average">
+<code class="descclassname">app.backtesting.routes.</code><code class="descname">get_moving_average</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/backtesting/routes.html#get_moving_average"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.backtesting.routes.get_moving_average" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Gets all the computed moving average values of a portfolio.</strong>
+This function allows user to get the moving average values of a portfolio when backtested on historical data.
+The user can optionally define the window parameter (the default is 50). The first number of entries equal
+to the window size is null.
+:return: results of the backtest
+- Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>POST http://127.0.0.1:5000/api/daily_returns?window=50
+&#39;{
+    &quot;AAPL&quot;: 2,
+    &quot;TSLA&quot;: &quot;7&quot;
+}&#39;
+</pre></div>
+</div>
+<ul>
+<li><dl class="first docutils">
+<dt>Expected Success Response::</dt>
+<dd><dl class="first docutils">
+<dt>{</dt>
+<dd><p class="first">1402531200000”:
+{</p>
+<blockquote>
+<div><p>“total_value”:1827.6768,
+“moving_average”:1581.275272</p>
+</div></blockquote>
+<p class="last">},</p>
+</dd>
+</dl>
+<p class="last">}</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.backtesting.routes.get_moving_standard_deviation">
+<code class="descclassname">app.backtesting.routes.</code><code class="descname">get_moving_standard_deviation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/backtesting/routes.html#get_moving_standard_deviation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.backtesting.routes.get_moving_standard_deviation" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Gets all the computed moving standard deviation values of a portfolio.</strong>
+This function allows user to get the moving standard deviation values of a portfolio when backtested on historical data.
+The user can optionally define the window parameter (the default is 50). The first number of entries equal
+to the window size is null.
+:return: results of the backtest
+- Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>POST http://127.0.0.1:5000/api/daily_returns?window=50
+&#39;{
+    &quot;AAPL&quot;: 2,
+    &quot;TSLA&quot;: &quot;7&quot;
+}&#39;
+</pre></div>
+</div>
+<ul>
+<li><dl class="first docutils">
+<dt>Expected Success Response::</dt>
+<dd><dl class="first docutils">
+<dt>{</dt>
+<dd><p class="first">1403481600000”:
+{</p>
+<blockquote>
+<div><p>“total_value”:1594.4634,
+“moving_standard_deviation”:90.1876341337</p>
+</div></blockquote>
+<p class="last">},</p>
+</dd>
+</dl>
+<p class="last">}</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="app.backtesting.routes.get_portfolio_statistics">
+<code class="descclassname">app.backtesting.routes.</code><code class="descname">get_portfolio_statistics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/app/backtesting/routes.html#get_portfolio_statistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#app.backtesting.routes.get_portfolio_statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p><strong>Gets all portfolio statistics: daily returns, moving_average, moving_standard_deviation.</strong>
+This function allows user to get the results of a portfolio when backtested on historical data. Note that the first few 
+entries for daily_returns, moving_average, and moving standard_deviation will be null.
+:return: results of the backtest
+- Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">POST</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="mf">127.0</span><span class="o">.</span><span class="mf">0.1</span><span class="p">:</span><span class="mi">5000</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">backtest</span>
+<span class="s1">&#39;{</span>
+    <span class="s2">&quot;AAPL&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;TSLA&quot;</span><span class="p">:</span> <span class="s2">&quot;7&quot;</span>
+<span class="p">}</span><span class="s1">&#39;</span>
+</pre></div>
+</div>
+<ul>
+<li><dl class="first docutils">
+<dt>Expected Success Response::</dt>
+<dd><dl class="first docutils">
+<dt>{</dt>
+<dd><p class="first">“1403481600000”:
+{</p>
+<blockquote>
+<div><p>“total_value”:1827.6768,
+“daily_returns”:53.2628,
+“moving_average”:1595.504664,
+“moving_standard_deviation”:90.1876341337</p>
+</div></blockquote>
+<p>},
+“1403568000000”:
+{</p>
+<blockquote>
+<div><p>“total_value”:1793.6248,
+“daily_returns”:-34.052,
+“moving_average”:1600.118304,
+“moving_standard_deviation”:94.2947709698</p>
+</div></blockquote>
+<p class="last">},</p>
+</dd>
+</dl>
+<p class="last">}</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">HistoricalDataProvider</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Nader Al Awar.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

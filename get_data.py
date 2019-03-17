@@ -31,19 +31,21 @@ def get_data(stock_ticker):
         return stock_record
     else:
         current_date = datetime.now()
-        stock_ticker_data_status = StockTickerInfo(stock_ticker=stock_ticker, last_accessed=datetime.now(), data_present=True, oldest_date=current_date - relativedelta(years=5), newest_date = current_date)
-        db.session.add(stock_ticker_data_status)
+        data_status.data_present = True
         stock_data = fetch_new_data(stock_ticker, current_date - relativedelta(years=5), current_date)
         stock_record = []
+        stock_record_dict = []
         for key, value in sorted(stock_data.items()):
             datetime_object = datetime.strptime(key, '%Y-%m-%d')
             daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, close_price=value['close'], open_price=value['open'], lowest_price=value['low'], volume=value['volume'], highest_price=value['high'])
-            stock_record.append(daily_price.to_dict())
+            stock_record.append(daily_price)
+            stock_record_dict.append(daily_price.to_dict())
             db.session.add(daily_price)
-        stock_ticker_data_status.number_of_entries = len(stock_data)
-        db.session.add(stock_ticker_data_status)
+        data_status.oldest_date = stock_record[-1].date  
+        data_status.newest_date = stock_record[0].date      
+        data_status.number_of_entries = len(stock_data)
         db.session.commit()
-        return stock_record
+        return stock_record_dict
 
 def check_data_status(stock_ticker):
     try:
@@ -51,6 +53,8 @@ def check_data_status(stock_ticker):
         return stock_ticker_data_status
     except NoResultFound:
         stock_ticker_data_status = StockTickerInfo(stock_ticker=stock_ticker, last_accessed=datetime.now(), data_present=False)
+        db.session.add(stock_ticker_data_status)
+        db.session.commit()
         return stock_ticker_data_status
 
 def fetch_new_data(stock_ticker, start_date, end_date):

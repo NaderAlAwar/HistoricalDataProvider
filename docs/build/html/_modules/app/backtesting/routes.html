@@ -1,0 +1,249 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>app.backtesting.routes &#8212; HistoricalDataProvider 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for app.backtesting.routes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: BackTesting</span>
+<span class="sd">   :synopsis: Backtests a portfolio based on historical data </span>
+<span class="sd">.. moduleauthor:: Nader Al Awar &lt;github.com/naderalawar&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">app.backtesting</span> <span class="k">import</span> <span class="n">bp</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">request</span>
+<span class="kn">from</span> <span class="nn">get_data</span> <span class="k">import</span> <span class="n">get_data</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">jsonify</span>
+<span class="kn">from</span> <span class="nn">get_statistics</span> <span class="k">import</span> <span class="n">prepare_dataframe</span>
+<span class="kn">from</span> <span class="nn">get_statistics</span> <span class="k">import</span> <span class="n">compute_statistics</span>
+<span class="kn">from</span> <span class="nn">get_statistics</span> <span class="k">import</span> <span class="n">compute_daily_returns</span>
+<span class="kn">from</span> <span class="nn">get_statistics</span> <span class="k">import</span> <span class="n">compute_moving_average</span>
+<span class="kn">from</span> <span class="nn">get_statistics</span> <span class="k">import</span> <span class="n">compute_moving_standard_deviation</span>
+
+<div class="viewcode-block" id="get_portfolio_statistics"><a class="viewcode-back" href="../../../index.html#app.backtesting.routes.get_portfolio_statistics">[docs]</a><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/backtest&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_portfolio_statistics</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        **Gets all portfolio statistics: daily returns, moving_average, moving_standard_deviation.**</span>
+<span class="sd">        This function allows user to get the results of a portfolio when backtested on historical data. Note that the first few </span>
+<span class="sd">        entries for daily_returns, moving_average, and moving standard_deviation will be null.</span>
+<span class="sd">        :return: results of the backtest</span>
+<span class="sd">        - Example::</span>
+<span class="sd">            POST http://127.0.0.1:5000/api/backtest</span>
+<span class="sd">            &#39;{</span>
+<span class="sd">                &quot;AAPL&quot;: 2,</span>
+<span class="sd">                &quot;TSLA&quot;: &quot;7&quot;</span>
+<span class="sd">            }&#39;</span>
+<span class="sd">        - Expected Success Response::</span>
+<span class="sd">            {</span>
+<span class="sd">                &quot;1403481600000&quot;:</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;total_value&quot;:1827.6768,</span>
+<span class="sd">                    &quot;daily_returns&quot;:53.2628,</span>
+<span class="sd">                    &quot;moving_average&quot;:1595.504664,</span>
+<span class="sd">                    &quot;moving_standard_deviation&quot;:90.1876341337</span>
+<span class="sd">                },</span>
+<span class="sd">                &quot;1403568000000&quot;:</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;total_value&quot;:1793.6248,</span>
+<span class="sd">                    &quot;daily_returns&quot;:-34.052,</span>
+<span class="sd">                    &quot;moving_average&quot;:1600.118304,</span>
+<span class="sd">                    &quot;moving_standard_deviation&quot;:94.2947709698</span>
+<span class="sd">                },</span>
+<span class="sd">            }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">portfolio</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">prices_df</span> <span class="o">=</span> <span class="n">prepare_dataframe</span><span class="p">(</span><span class="n">portfolio</span><span class="p">)</span>
+    <span class="n">performance</span> <span class="o">=</span> <span class="n">compute_statistics</span><span class="p">(</span><span class="n">prices_df</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">performance</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_daily_returns"><a class="viewcode-back" href="../../../index.html#app.backtesting.routes.get_daily_returns">[docs]</a><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/backtest/daily_returns&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_daily_returns</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        **Gets all the daily returns of a portfolio.**</span>
+<span class="sd">        This function allows user to get the daily returns of a portfolio when backtested on historical data. The first entry for</span>
+<span class="sd">        daily_returns is null.</span>
+<span class="sd">        :return: results of the backtest</span>
+<span class="sd">        - Example::</span>
+<span class="sd">            POST http://127.0.0.1:5000/api/daily_returns?window=50</span>
+<span class="sd">            &#39;{</span>
+<span class="sd">                &quot;AAPL&quot;: 2,</span>
+<span class="sd">                &quot;TSLA&quot;: &quot;7&quot;</span>
+<span class="sd">            }&#39;</span>
+<span class="sd">        - Expected Success Response::</span>
+<span class="sd">            {</span>
+<span class="sd">                &quot;1403481600000&quot;:</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;total_value&quot;:1827.6768,</span>
+<span class="sd">                    &quot;daily_returns&quot;:53.2628,</span>
+<span class="sd">                },</span>
+<span class="sd">                &quot;1403568000000&quot;:</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;total_value&quot;:1793.6248,</span>
+<span class="sd">                    &quot;daily_returns&quot;:-34.052,</span>
+<span class="sd">                },</span>
+<span class="sd">            }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">portfolio</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">prices_df</span> <span class="o">=</span> <span class="n">prepare_dataframe</span><span class="p">(</span><span class="n">portfolio</span><span class="p">)</span>
+    <span class="n">performance</span> <span class="o">=</span> <span class="n">compute_daily_returns</span><span class="p">(</span><span class="n">prices_df</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">performance</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_moving_average"><a class="viewcode-back" href="../../../index.html#app.backtesting.routes.get_moving_average">[docs]</a><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/backtest/moving_average&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_moving_average</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        **Gets all the computed moving average values of a portfolio.**</span>
+<span class="sd">        This function allows user to get the moving average values of a portfolio when backtested on historical data.</span>
+<span class="sd">        The user can optionally define the window parameter (the default is 50). The first number of entries equal</span>
+<span class="sd">        to the window size is null.</span>
+<span class="sd">        :return: results of the backtest</span>
+<span class="sd">        - Example::</span>
+<span class="sd">            POST http://127.0.0.1:5000/api/daily_returns?window=50</span>
+<span class="sd">            &#39;{</span>
+<span class="sd">                &quot;AAPL&quot;: 2,</span>
+<span class="sd">                &quot;TSLA&quot;: &quot;7&quot;</span>
+<span class="sd">            }&#39;</span>
+<span class="sd">        - Expected Success Response::</span>
+<span class="sd">            {</span>
+<span class="sd">                1402531200000&quot;:</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;total_value&quot;:1827.6768,</span>
+<span class="sd">                    &quot;moving_average&quot;:1581.275272</span>
+<span class="sd">                },</span>
+<span class="sd">            }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">portfolio</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;window&#39;</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="n">prices_df</span> <span class="o">=</span> <span class="n">prepare_dataframe</span><span class="p">(</span><span class="n">portfolio</span><span class="p">)</span>
+    <span class="n">performance</span> <span class="o">=</span> <span class="n">compute_moving_average</span><span class="p">(</span><span class="n">prices_df</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">performance</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="get_moving_standard_deviation"><a class="viewcode-back" href="../../../index.html#app.backtesting.routes.get_moving_standard_deviation">[docs]</a><span class="nd">@bp</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/api/backtest/moving_standard_deviation&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_moving_standard_deviation</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        **Gets all the computed moving standard deviation values of a portfolio.**</span>
+<span class="sd">        This function allows user to get the moving standard deviation values of a portfolio when backtested on historical data.</span>
+<span class="sd">        The user can optionally define the window parameter (the default is 50). The first number of entries equal</span>
+<span class="sd">        to the window size is null.</span>
+<span class="sd">        :return: results of the backtest</span>
+<span class="sd">        - Example::</span>
+<span class="sd">            POST http://127.0.0.1:5000/api/daily_returns?window=50</span>
+<span class="sd">            &#39;{</span>
+<span class="sd">                &quot;AAPL&quot;: 2,</span>
+<span class="sd">                &quot;TSLA&quot;: &quot;7&quot;</span>
+<span class="sd">            }&#39;</span>
+<span class="sd">        - Expected Success Response::</span>
+<span class="sd">            {</span>
+<span class="sd">                1403481600000&quot;:</span>
+<span class="sd">                {</span>
+<span class="sd">                    &quot;total_value&quot;:1594.4634,</span>
+<span class="sd">                    &quot;moving_standard_deviation&quot;:90.1876341337</span>
+<span class="sd">                },</span>
+<span class="sd">            }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">portfolio</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get_json</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;window&#39;</span><span class="p">))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="n">prices_df</span> <span class="o">=</span> <span class="n">prepare_dataframe</span><span class="p">(</span><span class="n">portfolio</span><span class="p">)</span>
+    <span class="n">performance</span> <span class="o">=</span> <span class="n">compute_moving_standard_deviation</span><span class="p">(</span><span class="n">prices_df</span><span class="p">,</span> <span class="n">window</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">performance</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">HistoricalDataProvider</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Nader Al Awar.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
