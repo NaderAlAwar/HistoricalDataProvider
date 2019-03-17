@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime
 
 class StockDailyPrice(db.Model):
     stock_ticker = db.Column(db.String(), primary_key=True)
@@ -21,5 +22,22 @@ class StockDailyPrice(db.Model):
             'lowest_price': self.lowest_price,
             'volume': self.volume,
             'highest_price': self.highest_price
+        }
+        return data
+
+class StockTickerInfo(db.Model):
+    stock_ticker = db.Column(db.String(), primary_key=True)
+    last_accessed = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    data_present = db.Column(db.Boolean, index=True)
+    oldest_date = db.Column(db.DateTime)
+    newest_date = db.Column(db.DateTime)
+
+    def to_dict(self):
+        data = {
+            'stock_ticker': self.stock_ticker,
+            'last_accessed': self.last_accessed,
+            'data_present': self.data_present,
+            'oldest_date': self.oldest_date,
+            'newest_date': self.newest_date
         }
         return data
