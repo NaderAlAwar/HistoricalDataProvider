@@ -3,12 +3,16 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import create_engine
+import urllib.parse as urlparse
 import logging
 import os
 from logging.handlers import RotatingFileHandler
+import redis
 
 db = SQLAlchemy()
 migrate = Migrate()
+redis_url = urlparse.urlparse(Config.REDISCLOUD_URL)
+r = redis.Redis(host=redis_url.hostname, port=redis_url.port, password=redis_url.password)
 
 def create_app(config_class=Config):
     app = Flask(__name__)
