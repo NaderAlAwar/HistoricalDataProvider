@@ -20,6 +20,6 @@ def dict_to_dataframe(stock_prices_dict): # takes in a dictionary of stock price
             current_date = stock_quote['date']
             if current_date < earliest_date or current_date > oldest_date:
                 continue
-            df.at[current_date, key] = stock_quote['close_price']
+            df.at[current_date, key] = stock_quote['open_price']
     
     return df        

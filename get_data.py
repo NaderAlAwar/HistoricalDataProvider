@@ -22,7 +22,7 @@ def get_data(stock_ticker):
             latest_data = fetch_new_data(stock_ticker, newest_date + timedelta(days=1), current_date)
             for key, value in sorted(latest_data.items()):
                 datetime_object = datetime.strptime(key, '%Y-%m-%d')
-                daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, close_price=value['close'], open_price=value['open'], lowest_price=value['low'], volume=value['volume'], highest_price=value['high'])
+                daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, open_price=value['open'])
                 stock_record.append(daily_price.to_dict())
                 db.session.add(daily_price)
             data_status.newest_date = current_date
@@ -37,7 +37,7 @@ def get_data(stock_ticker):
         stock_record_dict = []
         for key, value in sorted(stock_data.items()):
             datetime_object = datetime.strptime(key, '%Y-%m-%d')
-            daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, close_price=value['close'], open_price=value['open'], lowest_price=value['low'], volume=value['volume'], highest_price=value['high'])
+            daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, open_price=value['open'])
             stock_record.append(daily_price)
             stock_record_dict.append(daily_price.to_dict())
             db.session.add(daily_price)
