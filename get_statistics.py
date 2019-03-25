@@ -26,7 +26,7 @@ def compute_total_value(prices_over_time, portfolio):
 
 def compute_daily_returns(prices_over_time):
     df = prices_over_time
-    df['daily_returns'] = df.diff()
+    df['daily_returns'] = df.pct_change()
     return df
 
 def compute_moving_average(prices_over_time, window):
