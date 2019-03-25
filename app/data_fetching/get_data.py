@@ -6,9 +6,7 @@ from app.models import StockTickerInfo
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import asc
 from app import db
-from data_manipulation import dict_to_dataframe
 from dateutil.relativedelta import relativedelta
-from collections import deque
 
 def get_data(stock_ticker, start_date, end_date):
     data_status = check_data_status(stock_ticker)

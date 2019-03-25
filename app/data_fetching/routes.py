@@ -4,9 +4,9 @@
 .. moduleauthor:: Nader Al Awar <github.com/naderalawar>
 """
 
-from app.main import bp
+from app.data_fetching import bp
 from flask import request
-from get_data import get_data
+from app.data_fetching.get_data import get_data
 from flask import jsonify
 from datetime import datetime
 @bp.route("/")

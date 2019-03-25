@@ -7,13 +7,12 @@
 from app.backtesting import bp
 import pandas as pd
 from flask import request
-from get_data import get_data
 from flask import jsonify
-from get_statistics import prepare_dataframe
-from get_statistics import compute_statistics
-from get_statistics import compute_daily_returns
-from get_statistics import compute_moving_average
-from get_statistics import compute_moving_standard_deviation
+from app.backtesting.get_statistics import prepare_dataframe
+from app.backtesting.get_statistics import compute_statistics
+from app.backtesting.get_statistics import compute_daily_returns
+from app.backtesting.get_statistics import compute_moving_average
+from app.backtesting.get_statistics import compute_moving_standard_deviation
 from datetime import datetime
 
 @bp.route("/api/backtest", methods=['POST'])
