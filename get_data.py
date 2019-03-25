@@ -8,6 +8,7 @@ from sqlalchemy import asc
 from app import db
 from data_manipulation import dict_to_dataframe
 from dateutil.relativedelta import relativedelta
+from collections import deque
 
 def get_data(stock_ticker, start_date, end_date):
     data_status = check_data_status(stock_ticker)
@@ -22,13 +23,15 @@ def get_data(stock_ticker, start_date, end_date):
         data_status.last_accessed = current_date
         if end_date.date() != newest_date.date():
             missing_data = fetch_missing_data(stock_ticker, newest_date + timedelta(days=1), end_date)
+            stock_record = stock_record + missing_data
         if start_date.date() != oldest_date.date():
             missing_data = fetch_missing_data(stock_ticker, start_date, oldest_date - timedelta(days=1))
+            stock_record = missing_data + stock_record
     else:
         current_date = datetime.now()
         data_status.data_present = True
         missing_data = fetch_missing_data(stock_ticker, start_date, end_date)
-    stock_record.append(missing_data)
+        stock_record = missing_data
     data_status.newest_date = end_date
     data_status.oldest_date = start_date
     data_status.number_of_entries = data_status.number_of_entries + len(missing_data)
