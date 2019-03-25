@@ -14,6 +14,7 @@ from get_statistics import compute_statistics
 from get_statistics import compute_daily_returns
 from get_statistics import compute_moving_average
 from get_statistics import compute_moving_standard_deviation
+from datetime import datetime
 
 @bp.route("/api/backtest", methods=['POST'])
 def get_portfolio_statistics():
@@ -21,9 +22,11 @@ def get_portfolio_statistics():
         **Gets all portfolio statistics: daily returns, moving_average, moving_standard_deviation.**
         This function allows user to get the results of a portfolio when backtested on historical data. Note that the first few 
         entries for daily_returns, moving_average, and moving standard_deviation will be null.
+        :param start: starting point of the data in DDMMYYY format
+        :param end: end point of the data in DDMMYYY format
         :return: results of the backtest
         - Example::
-            POST http://127.0.0.1:5000/api/backtest
+            POST http://127.0.0.1:5000/api/backtest?window=50&start=01012018&end=05012018
             '{
                 "AAPL": 2,
                 "TSLA": "7"
@@ -47,7 +50,13 @@ def get_portfolio_statistics():
             }
     """
     portfolio = request.get_json(force=True)
-    prices_df = prepare_dataframe(portfolio)
+    try:
+        window = int(request.args.get('window'))
+    except:
+        pass
+    start_date = parse_date(request.args.get('start'))
+    end_date = parse_date(request.args.get('end'))
+    prices_df = prepare_dataframe(portfolio, start_date, end_date)
     performance = compute_statistics(prices_df)
     return performance.to_json(orient='index')
 
@@ -57,9 +66,11 @@ def get_daily_returns():
         **Gets all the daily returns of a portfolio.**
         This function allows user to get the daily returns of a portfolio when backtested on historical data. The first entry for
         daily_returns is null.
+        :param start: starting point of the data in DDMMYYY format
+        :param end: end point of the data in DDMMYYY format
         :return: results of the backtest
         - Example::
-            POST http://127.0.0.1:5000/api/daily_returns?window=50
+            POST http://127.0.0.1:5000/api/daily_returns?start=01012018&end=05012018
             '{
                 "AAPL": 2,
                 "TSLA": "7"
@@ -79,7 +90,9 @@ def get_daily_returns():
             }
     """
     portfolio = request.get_json(force=True)
-    prices_df = prepare_dataframe(portfolio)
+    start_date = parse_date(request.args.get('start'))
+    end_date = parse_date(request.args.get('end'))
+    prices_df = prepare_dataframe(portfolio, start_date, end_date)
     performance = compute_daily_returns(prices_df)
     return performance.to_json(orient='index')
 
@@ -90,9 +103,12 @@ def get_moving_average():
         This function allows user to get the moving average values of a portfolio when backtested on historical data.
         The user can optionally define the window parameter (the default is 50). The first number of entries equal
         to the window size is null.
+        :param window: the window size for computing average and std_dev
+        :param start: starting point of the data in DDMMYYY format
+        :param end: end point of the data in DDMMYYY format
         :return: results of the backtest
         - Example::
-            POST http://127.0.0.1:5000/api/daily_returns?window=50
+            POST http://127.0.0.1:5000/api/daily_returns?window=50&start=01012018&end=05012018
             '{
                 "AAPL": 2,
                 "TSLA": "7"
@@ -111,7 +127,12 @@ def get_moving_average():
         window = int(request.args.get('window'))
     except:
         pass
-    prices_df = prepare_dataframe(portfolio)
+    start_date = parse_date(request.args.get('start'))
+    end_date = parse_date(request.args.get('end'))
+    print(start_date)
+    print(end_date)
+
+    prices_df = prepare_dataframe(portfolio, start_date, end_date)
     performance = compute_moving_average(prices_df, window)
     return performance.to_json(orient='index')
 
@@ -122,9 +143,12 @@ def get_moving_standard_deviation():
         This function allows user to get the moving standard deviation values of a portfolio when backtested on historical data.
         The user can optionally define the window parameter (the default is 50). The first number of entries equal
         to the window size is null.
+        :param window: the window size for computing average and std_dev
+        :param start: starting point of the data in DDMMYYY format
+        :param end: end point of the data in DDMMYYY format
         :return: results of the backtest
         - Example::
-            POST http://127.0.0.1:5000/api/daily_returns?window=50
+            POST http://127.0.0.1:5000/api/daily_returns?window=50&start=01012018&end=05012018
             '{
                 "AAPL": 2,
                 "TSLA": "7"
@@ -143,6 +167,11 @@ def get_moving_standard_deviation():
         window = int(request.args.get('window'))
     except:
         pass
-    prices_df = prepare_dataframe(portfolio)
+    start_date = parse_date(request.args.get('start'))
+    end_date = parse_date(request.args.get('end'))
+    prices_df = prepare_dataframe(portfolio, start_date, end_date)
     performance = compute_moving_standard_deviation(prices_df, window)
     return performance.to_json(orient='index')
+
+def parse_date(date):
+    return datetime.strptime(date, '%d%m%Y')

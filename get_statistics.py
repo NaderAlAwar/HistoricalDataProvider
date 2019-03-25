@@ -2,12 +2,12 @@ import pandas as pd
 from get_data import get_data
 from data_manipulation import dict_to_dataframe
 
-def prepare_dataframe(portfolio):
+def prepare_dataframe(portfolio, start_date, end_date):
     # portfolio is a dict mapping stocks to weights
     stock_prices = {}
 
     for key, value in portfolio.items():
-        stock_prices[key] = get_data(key)
+        stock_prices[key] = get_data(key, start_date, end_date)
     
     df = dict_to_dataframe(stock_prices)
     df.dropna(inplace=True)

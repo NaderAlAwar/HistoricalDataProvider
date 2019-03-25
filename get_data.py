@@ -11,7 +11,9 @@ from dateutil.relativedelta import relativedelta
 
 def get_data(stock_ticker, start_date, end_date):
     data_status = check_data_status(stock_ticker)
-    if data_status.data_present == True:
+    stock_record = []
+    missing_data = []
+    if is_data_present(data_status, start_date, end_date):
         stock_record = StockDailyPrice.query.filter_by(stock_ticker=stock_ticker).filter(StockDailyPrice.date.between(start_date, end_date)).order_by(asc(StockDailyPrice.date)).all()
         newest_date = stock_record[-1].date
         oldest_date = stock_record[0].date
@@ -19,54 +21,45 @@ def get_data(stock_ticker, start_date, end_date):
         current_date = datetime.now()
         data_status.last_accessed = current_date
         if end_date.date() != newest_date.date():
-            latest_data = fetch_new_data(stock_ticker, newest_date + timedelta(days=1), end_date)
-            for key, value in sorted(latest_data.items()):
-                datetime_object = datetime.strptime(key, '%Y-%m-%d')
-                daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, open_price=value['open'])
-                stock_record.append(daily_price.to_dict())
-                db.session.add(daily_price)
-            data_status.newest_date = end_date
-            data_status.number_of_entries = data_status.number_of_entries + len(latest_data)
-            db.session.commit()
+            missing_data = fetch_missing_data(stock_ticker, newest_date + timedelta(days=1), end_date)
         if start_date.date() != oldest_date.date():
-            latest_data = fetch_new_data(stock_ticker, start_date, oldest_date - timedelta(days=1))
-            for key, value in sorted(latest_data.items()):
-                datetime_object = datetime.strptime(key, '%Y-%m-%d')
-                daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, open_price=value['open'])
-                stock_record.append(daily_price.to_dict())
-                db.session.add(daily_price)
-            data_status.oldest_date = start_date
-            data_status.number_of_entries = data_status.number_of_entries + len(latest_data)
-            db.session.commit()
-        return stock_record
+            missing_data = fetch_missing_data(stock_ticker, start_date, oldest_date - timedelta(days=1))
     else:
         current_date = datetime.now()
         data_status.data_present = True
-        stock_data = fetch_new_data(stock_ticker, start_date, end_date)
-        stock_record = []
-        stock_record_dict = []
-        for key, value in sorted(stock_data.items()):
-            datetime_object = datetime.strptime(key, '%Y-%m-%d')
-            daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, open_price=value['open'])
-            stock_record.append(daily_price)
-            stock_record_dict.append(daily_price.to_dict())
-            db.session.add(daily_price)
-        data_status.oldest_date = stock_record[-1].date  
-        data_status.newest_date = stock_record[0].date      
-        data_status.number_of_entries = len(stock_data)
-        db.session.commit()
-        return stock_record_dict
+        missing_data = fetch_missing_data(stock_ticker, start_date, end_date)
+    stock_record.append(missing_data)
+    data_status.newest_date = end_date
+    data_status.oldest_date = start_date
+    data_status.number_of_entries = data_status.number_of_entries + len(missing_data)
+    db.session.commit()
+    return stock_record
 
 def check_data_status(stock_ticker):
     try:
         stock_ticker_data_status = StockTickerInfo.query.filter_by(stock_ticker=stock_ticker).one()
         return stock_ticker_data_status
     except NoResultFound:
-        stock_ticker_data_status = StockTickerInfo(stock_ticker=stock_ticker, last_accessed=datetime.now(), data_present=False)
+        stock_ticker_data_status = StockTickerInfo(stock_ticker=stock_ticker, last_accessed=datetime.now(), data_present=False, number_of_entries=0)
         db.session.add(stock_ticker_data_status)
         db.session.commit()
         return stock_ticker_data_status
 
-def fetch_new_data(stock_ticker, start_date, end_date):
+def is_data_present(data_status, start_date, end_date):
+    if data_status.data_present == False:
+        return False
+    if end_date.date() < data_status.oldest_date.date():
+        return False
+    if start_date.date() > data_status.newest_date.date():
+        return False
+    return True
+
+def fetch_missing_data(stock_ticker, start_date, end_date):
     stock_data = get_historical_data(stock_ticker, start_date, end_date)
-    return stock_data
+    stock_data_list = []
+    for key, value in sorted(stock_data.items()):
+        datetime_object = datetime.strptime(key, '%Y-%m-%d')
+        daily_price = StockDailyPrice(stock_ticker=stock_ticker, date=datetime_object, open_price=value['open'])
+        stock_data_list.append(daily_price.to_dict())
+        db.session.add(daily_price)
+    return stock_data_list
