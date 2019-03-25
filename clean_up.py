@@ -22,6 +22,11 @@ def clean_up():
         db.session.commit()
 
 @manager.command
+def clear_db():
+    stock_data_status = StockTickerInfo.query.all().delete()
+    stock_data = StockDailyPrice.query.all().delete()
+
+@manager.command
 def get_all_statuses():
     stock_data_status = StockTickerInfo.query.all()
     stock_data_status = [data.to_dict() for data in stock_data_status]
