@@ -23,8 +23,8 @@ def clean_up():
 
 @manager.command
 def clear_db():
-    stock_data_status = StockTickerInfo.query.all().delete()
-    stock_data = StockDailyPrice.query.all().delete()
+    stock_data_status = StockTickerInfo.query.delete()
+    stock_data = StockDailyPrice.query.delete()
 
 @manager.command
 def get_all_statuses():
