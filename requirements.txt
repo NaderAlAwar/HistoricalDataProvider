@@ -33,7 +33,7 @@ iexfinance==0.3.5
 imagesize==1.1.0
 intervaltree==2.1.0
 itsdangerous==1.1.0
-Jinja2==2.10
+Jinja2==2.11.3
 Logbook==0.12.5
 lru-dict==1.1.4
 lxml==4.2.5
