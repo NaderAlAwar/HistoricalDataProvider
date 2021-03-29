@@ -54,7 +54,7 @@ psycopg2==2.7.7
 purepng==0.2.0
 pycparser==2.19
 pydocumentdb==2.3.3
-Pygments==2.3.1
+Pygments==2.7.4
 pyOpenSSL==18.0.0
 pyparsing==2.3.1
 PyPortfolioOpt==0.2.0
