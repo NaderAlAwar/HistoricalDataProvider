@@ -45,7 +45,7 @@ multipledispatch==0.6.0
 networkx==1.11
 noisyopt==0.2.2
 numexpr==2.6.1
-numpy==1.14.6
+numpy==1.22.0
 packaging==19.0
 pandas==0.22.0
 pandas-datareader==0.6.0
