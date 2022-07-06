@@ -36,7 +36,7 @@ itsdangerous==1.1.0
 Jinja2==2.10
 Logbook==0.12.5
 lru-dict==1.1.4
-lxml==4.2.5
+lxml==4.9.1
 Mako==1.0.7
 MarkupSafe==1.0
 #mkl-fft==1.0.6
